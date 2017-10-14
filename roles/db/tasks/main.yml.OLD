@@ -1,0 +1,56 @@
+- name: "Instalando zabbix-server-pgsql"
+  apt: pkg={{ item }} state=installed
+  with_items:
+  - zabbix-agent
+  - nginx
+  - postgresql
+  - php
+  - php-cli
+  - php-fpm
+  - php-pgsql
+  - php-bcmath
+  - php-mbstring
+  - php-gd php-xml
+  - zabbix-server-pgsql
+  - snmp-mibs-downloader
+  - nginx-doc
+  - postgresql-doc
+  - postgresql-doc-9.5
+
+- name: "0"
+  template:
+  src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf
+
+- name: "1"
+  template:
+  src=zabbix_server.conf.j2 dest=/etc/zabbix/zabbix_server.conf
+
+- name: "2"
+  template:
+  src=default.j2 dest=/etc/nginx/sites-enabled/default
+
+- name: "3"
+  template:
+  src=pg_hba.conf.jb dest=/etc/postgresql/9.5/main/pg_hba.conf
+
+- name: "4"
+  template:
+  src=create.sql.gz.j2 dest=/usr/share/doc/zabbix-server-pgsql/create.sql.gz
+
+- name: "5"
+  template:
+  src=php.ini.j2 dest=/etc/php/7.0/fpm/php.ini
+
+- name: "6"
+  template:
+  src=pgsql-zabbix-create.sh.j2 dest=/usr/bin/pgsql-zabbix-create.sh
+
+- name: "7"
+  template:
+  src=zabbix.conf.php.j2 dest=/usr/share/zabbix/conf/zabbix.conf.php
+  notify: restart php7.0-fpm
+
+  notify:
+  - restart nginx
+  - restart zabbix-server
+  - restart zabbix-agent

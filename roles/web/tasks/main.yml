@@ -1,0 +1,11 @@
+- name: "Configurando sqlite, mysql-server, galera-3"
+  apt: pkg={{ item }} state=installed
+  with_items:
+  - nginx
+  - sqlite
+  - mysql-server
+  - galera-3
+
+- name: "Criar novo arquivo index.html"
+  template: src=index.html.j2 dest=/var/www/html/index.html
+  notify: restart nginx

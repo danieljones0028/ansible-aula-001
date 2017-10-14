@@ -1,0 +1,12 @@
+---
+- name: Instalando os pacotes WEB
+  hosts: web
+  become: true
+  roles:
+  - web
+
+- name: Instalando os pacotes DB
+  hosts: db
+  become: true
+  roles:
+  - db

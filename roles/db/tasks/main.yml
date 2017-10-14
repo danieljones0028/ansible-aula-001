@@ -1,0 +1,36 @@
+- name: "Instalando zabbix-server-pgsql"
+  apt: pkg={{ item }} state=installed
+  with_items:
+  - nginx
+  - nginx-core
+  - postgresql
+  - postgresql-doc
+  - postgresql-doc-9.5
+  - zabbix-server-pgsql
+  - zabbix-frontend-php
+  - zabbix-agent
+  - php
+  - php-cli
+  - php-fpm
+  - php-pgsql
+  - php-bcmath
+  - php-mbstring
+  - php-gd
+  - php-xml
+
+- name: "Altera arquivo server"
+  template:
+    src=default.j2 dest=/etc/nginx/sites-enabled/default
+    src=pg_hba.conf.jb dest=/etc/postgresql/9.5/main/pg_hba.conf
+    src=create.sql.gz.j2 dest=/usr/share/doc/zabbix-server-pgsql/create.sql.gz
+    src=php.ini.j2 dest=/etc/php/7.0/fpm/php.ini
+    src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf
+    src=zabbix_server.conf.j2 dest=/etc/zabbix/zabbix_server.conf
+    src=pgsql-zabbix-create.sh.j2 dest=/usr/bin/pgsql-zabbix-create.sh
+    src=zabbix.conf.php.j2 dest=/usr/share/zabbix/conf/zabbix.conf.php
+
+  notify:
+    restart nginx
+    restart php7.0-fpm
+    restart zabbix-server
+    restart zabbix-agent
